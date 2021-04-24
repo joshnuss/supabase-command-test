@@ -15,8 +15,8 @@ create table animations (
 create table animation_commands (
   id serial primary key,
   user_id uuid references auth.users not null default auth.uid(),
-  animation_id bigint references animations not null,
-  index bigint not null,
+  animation_id bigint references animations on delete cascade not null,
+  counter bigint not null,
   type varchar not null,
   args jsonb default '{}'::jsonb,
   previous jsonb default '{}'::jsonb,
@@ -27,7 +27,7 @@ create table animation_commands (
 create table animation_versions (
   id serial primary key,
   user_id uuid references auth.users not null default auth.uid(),
-  animation_id bigint references animations not null,
+  animation_id bigint references animations on delete cascade not null,
   name varchar not null,
   data jsonb default '{}'::jsonb,
   timestamp timestamp with time zone not null
@@ -46,4 +46,3 @@ $$ language plpgsql security definer;
 create trigger on_animation_updated
   after update on animations
   for each row execute procedure handle_updated_animation();
-
